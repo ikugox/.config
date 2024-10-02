@@ -3,18 +3,22 @@
 exec --no-startup-id dex --autostart --environment i3
 exec_always --no-startup-id ~/.config/polybar/launch.sh --blocks
 exec --no-startup-id xss-lock --transfer-sleep-lock -- mantablockscreen --nofork
-exec --no-startup-id redshift -l 43.20070:21.51500 &
+# exec --no-startup-id redshift -l 43.20070:21.51500 &
 exec --no-startup-id nm-applet
 # wallpaper
-exec_always --no-startup-id feh --bg-fill --randomize ~/Pictures/Wallpapers/SU/*
+# exec_always --no-startup-id feh --bg-fill --randomize ~/Pictures/Wallpapers/SU/*
+exec_always --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/wallpaper3.jpg
 
-# brightness
+# use only second monitor
+# exec --no-startup-id xrandr --output eDP --off --output HDMI-A-0 --auto
+
+# brightness TODO: add for the script of ddcutil
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 
 # lock the screen
-bindsym $mod+l exec --no-startup-id mantablockscreen -cc
-
+bindsym $mod+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/wallpaper2-blurred.jpg -e -k --radius 100 --indicator --inside-color=FFD35A --ring-color=FFD35A --keyhl-color=DC0083 --time-str="%H:%M" --time-size=44 --time-pos="w/2:h/2-10" --date-str="      %a%n%d.%b.%Y" --date-size=22 --date-pos="w/2+48:h/2+25"
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/polybar/blocks/scripts/powermenu.sh &
 # change keyboard
 exec_always --no-startup-id setxkbmap -layout us,rs,rs -variant ,latin, -option 'grp:win_space_toggle'
 
@@ -27,6 +31,11 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+## Screenshots
+bindsym Print exec --no-startup-id maim --hidecursor ~/Pictures/Screenshots/$(date +%Y-%b-%d-%H-%M-%S | tr A-Z a-z).png
+bindsym Shift+Print exec --no-startup-id maim --window $(xdotool getactivewindow) ~/Pictures/Screenshots/$(date +%Y-%b-%d-%H-%M-%S | tr A-Z a-z).png
+bindsym $mod+Print exec --no-startup-id maim --select ~/Pictures/Screenshots/$(date +%Y-%b-%d-%H-%M-%S | tr A-Z a-z).png
 
 # terminal
 bindsym $mod+Return exec kitty
