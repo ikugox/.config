@@ -1,12 +1,19 @@
 #!/bin/bash
-# Usage: ./brightness.sh up/down value (e.g., ./brightness.sh up 10)
-direction=$1 # "up" or "down"
-value=$2     # The amount to increase or decrease
+# Usage: ./brightness.sh up/down value
 
-# Get the current brightness value
-current_brightness=$(ddcutil getvcp 10 | awk -F'=' '/current value/ {print $2}' | awk -F',' '{print $1}' | xargs)
+direction=$1                         # "up" or "down"
+value=$2                             # Amount to increase or decrease
+cache_file="/tmp/current_brightness" # Cache file for brightness
 
-# Calculate new brightness value
+# Get the current brightness value from the cache or ddcutil
+if [ -f "$cache_file" ]; then
+    current_brightness=$(cat "$cache_file")
+else
+    current_brightness=$(ddcutil getvcp 10 | awk -F'=' '/current value/ {print $2}' | awk -F',' '{print $1}' | xargs)
+    echo "$current_brightness" >"$cache_file" # Cache it for next time
+fi
+
+# Calculate new brightness
 if [ "$direction" = "up" ]; then
     new_brightness=$((current_brightness + value))
 elif [ "$direction" = "down" ]; then
@@ -16,14 +23,14 @@ else
     exit 1
 fi
 
-# Ensure the new brightness is within the valid range (0-100)
+# Clamp the brightness value within the range 0-100
 if [ "$new_brightness" -gt 100 ]; then
     new_brightness=100
 elif [ "$new_brightness" -lt 0 ]; then
     new_brightness=0
 fi
 
-# Set the new brightness value
-ddcutil setvcp 10 $new_brightness
+# Set new brightness
+ddcutil setvcp 10 "$new_brightness" && echo "$new_brightness" >"$cache_file"
 
-echo "Brightness set to $new_brightness%"
+# echo "Brightness set to $new_brightness%"
